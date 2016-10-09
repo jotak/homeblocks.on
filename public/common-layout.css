@@ -1,0 +1,145 @@
+body {
+    background-color: #505555;
+    font-family: Helvetica;
+    color: #8fa7bf;
+}
+
+.dark {
+    background: #020202 none repeat scroll 0 0;
+}
+
+.light {
+    background: #34495e none repeat scroll 0 0;
+}
+
+#page {
+}
+
+.block {
+    padding-top: 8px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 200px;
+    height: 200px;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.block.selected {
+    border: 5px solid #297;
+}
+
+.block ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 10px 0 0;
+}
+
+.block a {
+    font-weight: bold;
+    text-decoration: none;
+    color: #1abc9c;
+    cursor: pointer;
+}
+
+.block a:visited {
+    color: #1abc9c;
+}
+
+.block a:active {
+    color: #1abc9c;
+}
+
+.block a:hover {
+    color: #e0e000;
+}
+
+.block li .fa-trash {
+    margin-left: 5px;
+}
+
+.block input {
+    z-index: 2;
+    position: relative;
+}
+
+.hidden {
+    display: none;
+}
+
+.del-block {
+    position: absolute;
+    font-size: 1.4em;
+    top: 167px;
+    left: 175px;
+}
+
+.btn-north,
+.btn-south,
+.btn-east,
+.btn-west {
+    position: absolute;
+    font-size: 1.4em;
+    margin-left: -10px;
+    margin-top: -14px;
+    z-index: 1;
+}
+
+.btn-north {
+    top: 0;
+    left: 100px;
+}
+
+.btn-south {
+    top: 200px;
+    left: 100px;
+}
+
+.btn-east {
+    top: 100px;
+    left: 200px;
+}
+
+.btn-west {
+    top: 100px;
+    left: 0;
+}
+
+ul.btn-north {
+    margin-left: -65px;
+    margin-top: -50px;
+}
+
+ul.btn-south {
+    margin-left: -65px;
+    margin-top: 20px;
+}
+
+ul.btn-north li {
+    display: inline;
+}
+
+ul.btn-south li {
+    display: inline;
+}
+
+ul.btn-east {
+    margin-left: 20px;
+    margin-top: -72px;
+}
+
+ul.btn-west {
+    margin-left: -50px;
+    margin-top: -72px;
+}
+
+.block audio {
+    margin-top: 50px;
+    width: 200px;
+}
+
+.block video {
+    margin-top: 5px;
+    width: 200px;
+}

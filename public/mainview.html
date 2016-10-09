@@ -1,0 +1,8 @@
+<!-- Page -->
+<div id="page">
+    <!-- Loop over blocks -->
+    <div class="block" style="{{ block.style }}" ng-repeat="block in blocks">
+        <div class="block-title" ng-if="block.title">{{ block.title }}</div>
+        <ng-include src="'partials/block-'+ block.type + '.html'"></ng-include>
+    </div>
+</div>
