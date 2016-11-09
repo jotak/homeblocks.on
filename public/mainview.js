@@ -54,15 +54,15 @@ function initMainListeners($scope, $location, $http) {
         $scope.token = "";
         $http.post('/api/auth', { username: $scope.username, password: password })
             .success(function (token) {
-            $location.path("/e/" + $scope.username + "/" + token);
-        })
+                $location.path("/e/" + $scope.username + "/" + token);
+            })
             .error(function (err) {
-            console.error('Error: ' + err);
-            $scope.profile.message = 'Error: ' + err;
-        });
+                console.error('Error: ' + err);
+                $scope.profile.message = 'Error: ' + err;
+            });
     };
     $scope.onNew = function (username, password) {
-        $http.put('/api/profile', { username: username, password: password })
+        $http.put('/api/profile', { username: username, password: password, page: [] })
             .success(function (token) {
             $location.path("/e/" + username + "/" + token);
         })
@@ -72,39 +72,39 @@ function initMainListeners($scope, $location, $http) {
         });
     };
     $scope.onDuplicate = function (username, password) {
-        $http.put('/api/profile', { username: username, password: password })
+        $http.put('/api/profile', { username: username, password: password, page: [] })
             .success(function (token) {
-            $scope.profile.username = username;
-            $scope.profile.password = password;
-            saveProfile($http, token, $scope.profile).then(function () {
-                $location.path("/v/" + username);
-            }).fail(function (err) {
+                $scope.profile.username = username;
+                $scope.profile.password = password;
+                saveProfile($http, token, $scope.profile).then(function () {
+                    $location.path("/v/" + username);
+                }).fail(function (err) {
+                    console.error(err);
+                    $scope.profile.message = err;
+                }).done();
+                $scope.profile.password = "";
+            })
+            .error(function (err) {
                 console.error(err);
                 $scope.profile.message = err;
-            }).done();
-            $scope.profile.password = "";
-        })
-            .error(function (err) {
-            console.error(err);
-            $scope.profile.message = err;
-        });
+            });
     };
     $scope.onUpload = function (uploaded) {
         $scope.profile = eval('(' + uploaded + ')');
         $http.put('/api/profile', { username: $scope.profile.username, password: $scope.profile.password })
             .success(function (token) {
-            saveProfile($http, token, $scope.profile).then(function () {
-                $location.path("/v/" + $scope.profile.username);
-            }).fail(function (err) {
+                saveProfile($http, token, $scope.profile).then(function () {
+                    $location.path("/v/" + $scope.profile.username);
+                }).fail(function (err) {
+                    console.error(err);
+                    $scope.profile.message = err;
+                }).done();
+                $scope.profile.password = "";
+            })
+            .error(function (err) {
                 console.error(err);
                 $scope.profile.message = err;
-            }).done();
-            $scope.profile.password = "";
-        })
-            .error(function (err) {
-            console.error(err);
-            $scope.profile.message = err;
-        });
+            });
     };
     $scope.onClickNew = function () {
         $scope.showNew = !$scope.showNew;

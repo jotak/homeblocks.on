@@ -11,3 +11,10 @@ shared class Link(String title, String url, String? description) {
         };
     }
 }
+
+abstract class JsonLink() of jsonLink {
+    shared Link deserialize(Object json) {
+        return Link(json.getString("title"), json.getString("url"), json.getStringOrNull("description"));
+    }
+}
+object jsonLink extends JsonLink() {}
