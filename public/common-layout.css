@@ -143,3 +143,42 @@ ul.btn-west {
     margin-top: 5px;
     width: 200px;
 }
+
+@-moz-keyframes translate1 {
+    0% { -moz-transform: translateY(-40px); }
+    100% { -moz-transform: translateY(0); }
+}
+@-webkit-keyframes translate1 {
+    0% { -webkit-transform: translateY(-40px); }
+    100% { -webkit-transform: translateY(0); }
+}
+@keyframes translate1 {
+    0% { transform: translateY(-40px); }
+    100% { transform: translateY(0); }
+}
+
+@-moz-keyframes translate2 {
+    0% { -moz-transform: translate(-60px, 120px); }
+    100% { -moz-transform: translate(0, 0); }
+}
+@-webkit-keyframes translate2 {
+    0% { -webkit-transform: translate(-60px, 120px); }
+    100% { -webkit-transform: translate(0, 0); }
+}
+@keyframes translate2 {
+    0% { transform: translate(-60px, 120px); }
+    100% { transform: translate(0, 0); }
+}
+
+@-moz-keyframes translate3 {
+    0% { -moz-transform: translate(150px, 80px); }
+    100% { -moz-transform: translate(0, 0); }
+}
+@-webkit-keyframes translate3 {
+    0% { -webkit-transform: translate(150px, 80px); }
+    100% { -webkit-transform: translate(0, 0); }
+}
+@keyframes translate3 {
+    0% { transform: translate(150px, 80px); }
+    100% { transform: translate(0, 0); }
+}

@@ -37,8 +37,8 @@ function saveProfile($http, scope) {
     $http.post('/api/user/' + scope.refUser + '/profile/' + scope.profile, scope.page).success(function() {
         deferred.resolve(true);
     }).error(function(err) {
-        scope.message = 'Error: ' + err;
-        deferred.reject(scope.message);
+        scope.page.message = 'Error: ' + err;
+        deferred.reject(scope.page.message);
     });
     return deferred.promise;
 }
@@ -76,10 +76,19 @@ function fillBlockStyle(block, id, minPos) {
     block.id = id;
     computeBlockStyle(block);
 }
+var effects = ["translate1", "translate2", "translate3"];
+function getRandomEffect() {
+    var rnd = Math.floor(Math.random()*effects.length);
+    var effect = effects[rnd];
+    var duration = Math.floor((2+Math.random()*20)) / 20.0;
+    return "-moz-animation-name: " + effect + "; -moz-animation-iteration-count: 1; -moz-animation-timing-function: ease-in; -moz-animation-duration: " + duration + "s;"
+        + "-webkit-animation-name: " + effect + "; -webkit-animation-iteration-count: 1; -webkit-animation-timing-function: ease-in; -webkit-animation-duration: " + duration + "s;"
+        + "animation-name: " + effect + "; animation-iteration-count: 1; animation-timing-function: ease-in; animation-duration: " + duration + "s;";
+}
 function computeBlockStyle(block) {
     var marginLeft = block.styleData.marginLeft + block.styleData.dx;
     var marginTop = block.styleData.marginTop + block.styleData.dy;
-    block.style = "margin-left: " + marginLeft + "px; margin-top: " + marginTop + "px; background-color: " + block.styleData.color;
+    block.style = "margin-left: " + marginLeft + "px; margin-top: " + marginTop + "px; background-color: " + block.styleData.color + "; " + getRandomEffect();
     block.NStyle = "margin-left: " + (marginLeft + 100) + "px; margin-top: " + marginTop + "px;";
     block.SStyle = "margin-left: " + (marginLeft + 100) + "px; margin-top: " + (marginTop + 200) + "px;";
     block.EStyle = "margin-left: " + (marginLeft + 200) + "px; margin-top: " + (marginTop + 100) + "px;";

@@ -1,8 +1,7 @@
 import ceylon.json {
     Value,
     Array,
-    Object,
-    InvalidTypeException
+    Object
 }
 
 class AudioBlock(Link[] links, Integer posx, Integer posy, String? title)

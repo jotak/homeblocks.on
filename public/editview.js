@@ -128,7 +128,7 @@ function createEmptyBlock(x, y, type) {
     block.posx = x;
     block.posy = y;
     block.type = type;
-    if (type == "links" || type == "audio" || type == "video") {
+    if (type == "links" || type == "audio" || type == "video" || type == "image") {
         block.links = [];
     }
     else {

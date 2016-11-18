@@ -44,6 +44,7 @@ angular.module('homeblocks.mainview', ['ngRoute'])
             $scope.refUser = ctx.refUser;
             $scope.profile = ctx.profile;
             $scope.page = ctx.page;
+            $scope.page.message = "";
             $scope.logged = ctx.logged;
             if ($scope.logged) {
                 $scope.isLoggedIn = true;
@@ -95,7 +96,7 @@ function initMainListeners($scope, $location, $http) {
             $location.path("/u/" + $scope.refUser + "/" + name + "/e");
         }).error(function(err) {
             console.error(err);
-            $scope.message = err;
+            $scope.page.message = err;
         });
     };
     $scope.onUpload = function(uploaded) {
@@ -109,7 +110,7 @@ function initMainListeners($scope, $location, $http) {
         //     })
         //     .error(function (err) {
         //         console.error(err);
-        //         $scope.message = err;
+        //         $scope.page.message = err;
         //     });
     };
     $scope.onDownload = function() {
@@ -156,7 +157,7 @@ function initMainListeners($scope, $location, $http) {
     $scope.onSetAlias = function(name) {
         $http.put('/api/alias/' + name).success(function(ok) {
             if (!ok) {
-                $scope.message = "This alias is already taken";
+                $scope.page.message = "This alias is already taken";
             } else {
                 $scope.showAlias = false;
                 if ($scope.profile) {
@@ -167,7 +168,7 @@ function initMainListeners($scope, $location, $http) {
             }
         }).error(function(err) {
             console.error(err);
-            $scope.message = err;
+            $scope.page.message = err;
         });
     };
 }
