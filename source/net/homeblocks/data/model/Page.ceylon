@@ -11,9 +11,9 @@ shared class Page(shared Block[] blocks) {
     }
 }
 
-abstract class JsonPage() of jsonPage {
+shared abstract class JsonPage() of jsonPage {
     shared Page deserialize(Object json) {
         return Page([for (block in json.getArray("blocks").objects) jsonBlock.deserialize(block)]);
     }
 }
-object jsonPage extends JsonPage() {}
+shared object jsonPage extends JsonPage() {}

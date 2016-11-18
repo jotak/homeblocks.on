@@ -1,8 +1,7 @@
 import ceylon.json {
     Array,
     Value,
-    Object,
-    InvalidTypeException
+    Object
 }
 
 class LinksBlock(Link[] links, Integer posx, Integer posy, String? title)

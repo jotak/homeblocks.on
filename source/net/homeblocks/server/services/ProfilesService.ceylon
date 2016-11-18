@@ -1,88 +1,92 @@
 import ceylon.file {
-    parsePath,
     Path,
     Nil,
-    File
+    File,
+    Directory
 }
 import ceylon.json {
     Object,
     parse
 }
+import ceylon.promise {
+    Promise,
+    Deferred
+}
 
 import net.homeblocks.data.model {
-    PrivateProfile,
-    Profile,
-    privateProfiles
+    Page,
+    jsonPage,
+    emptyPage
 }
-import net.homeblocks.server.security {
-    Authentication
+import net.homeblocks.server.util {
+    promises
 }
 
-shared class ProfilesService(String strRoot) {
+shared class ProfilesService(UsersService usersService) {
 
-    Authentication auth = Authentication();
-    Path fsRoot = parsePath(strRoot);
-    Path profilesPath() => fsRoot.childPath("profiles");
-    Path userPath(String username) => profilesPath().childPath(username + ".json");
+    Path userPath(Integer userID) => usersService.usersPath.childPath(userID.string);
+    Path profilePath(Integer userID, String profile) => userPath(userID).childPath(profile + ".json");
 
-    if (is Nil res = profilesPath().resource) {
-        res.createDirectory();
-        print("'profiles' folder has been created.");
-    }
-
-    shared Profile? load(String username) {
-        return loadPrivate(username)?.public();
-    }
-
-    PrivateProfile? loadPrivate(String username) {
-        if (is File file = userPath(username).resource) {
-            try (reader = file.Reader()) {
-                variable String strProfile = "";
-                while (exists line = reader.readLine()) {
-                    strProfile += "\n" + line;
-                }
-                if (is Object json = parse(strProfile)) {
-                    return privateProfiles.deserialize(json);
-                }
-                return null;
-            }
+    shared Promise<String[]> list(Integer userID) {
+        value deferred = Deferred<String[]>();
+        if (is Directory dir = userPath(userID).resource) {
+            deferred.fulfill(
+                [for (path in dir.childPaths()) if (is File f = path.resource) f.name.substring(0, f.name.size-5)]);
+        } else {
+            deferred.fulfill([]);
         }
-        return null;
+        return deferred.promise;
     }
 
-    shared Boolean createEmpty(String username, String password) {
-        value resource = userPath(username).resource;
-        if (is Nil resource) {
-            File file = resource.createFile();
-            String hash = auth.getHash(password);
-            PrivateProfile p = privateProfiles.empty(username, hash);
-            try (writer = file.Overwriter()) {
-                writer.write(p.json().string);
-                return true;
+    shared Promise<Page> load(Integer userID, String profile) {
+        value deferred = Deferred<Page>();
+        if (is File file = profilePath(userID, profile).resource) {
+            try (reader = file.Reader()) {
+                variable String fileContent = "";
+                while (exists line = reader.readLine()) {
+                    fileContent += "\n" + line;
+                }
+                if (is Object json = parse(fileContent)) {
+                    deferred.fulfill(jsonPage.deserialize(json));
+                } else {
+                    promises.reject(deferred, "Can't load profile: json root should be an object");
+                }
             }
         } else {
-            print("Trying to create '" + resource.string + "', but it already exists.");
+            promises.reject(deferred, "Can't load profile: file not found");
         }
-        return false;
+        return deferred.promise;
     }
 
-    shared Boolean update(Profile profile) {
-        if (exists hash = loadPrivate(profile.getUsername())?.getPassword()) {
-            PrivateProfile pp = privateProfiles.fromPublic(profile, hash);
-            if (is File file = userPath(profile.getUsername()).resource) {
-                try (writer = file.Overwriter()) {
-                    writer.write(pp.json().string);
-                    return true;
-                }
+    shared Promise<Page> createEmpty(Integer userID, String profile) {
+        value deferred = Deferred<Page>();
+        if (is Nil res = userPath(userID).resource) {
+            res.createDirectory();
+        }
+        value resource = profilePath(userID, profile).resource;
+        if (is Nil resource) {
+            File file = resource.createFile();
+            try (writer = file.Overwriter()) {
+                Page p = emptyPage();
+                writer.write(p.json().string);
+                deferred.fulfill(p);
             }
+        } else {
+            promises.reject(deferred, "Trying to create '" + resource.string + "', but it already exists");
         }
-        return false;
+        return deferred.promise;
     }
 
-    shared Boolean matchPassword(String username, String password) {
-        if (exists storedHash = loadPrivate(username)?.getPassword()) {
-            return auth.authenticate(password, storedHash);
+    shared Promise<Null> update(Integer userID, String name, Page page) {
+        value deferred = Deferred<Null>();
+        if (is File file = profilePath(userID, name).resource) {
+            try (writer = file.Overwriter()) {
+                writer.write(page.json().string);
+                deferred.fulfill(null);
+            }
+        } else {
+            promises.reject(deferred, "Could not retrieve the profile to update");
         }
-        return false;
+        return deferred.promise;
     }
 }

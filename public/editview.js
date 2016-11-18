@@ -1,49 +1,50 @@
 "use strict";
 angular.module('homeblocks.editview', ['ngRoute'])
     .config(['$routeProvider', function ($routeProvider) {
-        $routeProvider.when('/e/:username/:token', {
+        $routeProvider.when('/u/:user/:profile/e', {
             templateUrl: 'editview.html',
             controller: 'editViewCtrl'
         });
     }])
     .controller("editViewCtrl", ['$scope', '$http', '$routeParams', '$rootScope', '$location', '$document', function ($scope, $http, $routeParams, $rootScope, $location, $document) {
-        $rootScope.title = $routeParams.username + "@homeblocks";
-        $http.get('/api/profile/' + $routeParams.username)
-            .success(function (profile) {
-            $scope.profile = profile;
-            $scope.username = $routeParams.username;
-            $scope.token = $routeParams.token;
-            $scope.blocks = profile.page.blocks;
+        $rootScope.title = "homeblocks";
+        $http.get('/api/user/' + $routeParams.user + "/profile/" + $routeParams.profile).success(function(ctx) {
+            $rootScope.title = ctx.title;
+            $scope.refUser = ctx.refUser;
+            $scope.profile = ctx.profile;
+            $scope.page = ctx.page;
+            $scope.logged = ctx.logged;
             $scope.minPos = { x: 0, y: 0 };
-            fillPageStyle($scope.blocks, $scope.minPos);
+            if ($scope.logged != $scope.refUser) {
+                $location.path("u/" + $scope.refUser + "/" + $scope.profile);
+            }
+            fillPageStyle($scope.page.blocks, $scope.minPos);
             initEditListeners($scope, $location, $http, $document);
-        })
-            .error(function (data) {
+        }).error(function (data) {
             console.log('Error: ' + data);
         });
     }]);
 function initEditListeners($scope, $location, $http, $document) {
     $scope.viewMode = function () {
-        $scope.token = "";
-        $location.path("/v/" + $scope.username);
+        $location.path("u/" + $scope.refUser + "/" + $scope.profile);
     };
-    $scope.onClickBlockTitle = function (block, focusId) {
+    $scope.onClickBlockTitle = function(block, focusId) {
         block.editTitle = true;
         setTimeout(function () {
             document.getElementById(focusId).focus();
         }, 30);
     };
-    $scope.onClickLink = function (link, focusId) {
+    $scope.onClickLink = function(link, focusId) {
         link.editing = true;
         setTimeout(function () {
             document.getElementById(focusId).focus();
         }, 30);
     };
-    $scope.onSaveLink = function (link) {
+    $scope.onSaveLink = function(link) {
         link.editing = false;
-        saveProfile($http, $scope.token, $scope.profile);
+        saveProfile($http, $scope);
     };
-    $scope.onCreateLink = function (block) {
+    $scope.onCreateLink = function(block) {
         var link = {
             title: "",
             url: "http://",
@@ -51,75 +52,73 @@ function initEditListeners($scope, $location, $http, $document) {
             editing: true
         };
         block.links.push(link);
-        saveProfile($http, $scope.token, $scope.profile);
+        saveProfile($http, $scope);
     };
-    $scope.onDeleteLink = function (block, index) {
+    $scope.onDeleteLink = function(block, index) {
         block.links.splice(index, 1);
-        saveProfile($http, $scope.token, $scope.profile);
+        saveProfile($http, $scope);
     };
-    $scope.onLinkUp = function (block, index) {
+    $scope.onLinkUp = function(block, index) {
         var tmp = block.links[index - 1];
         block.links[index - 1] = block.links[index];
         block.links[index] = tmp;
-        saveProfile($http, $scope.token, $scope.profile);
+        saveProfile($http, $scope);
     };
-    $scope.onSaveBlock = function (block) {
+    $scope.onSaveBlock = function(block) {
         block.editTitle = false;
-        saveProfile($http, $scope.token, $scope.profile);
+        saveProfile($http, $scope);
     };
-    $scope.onCreateBlock = function (x, y, type) {
+    $scope.onCreateBlock = function(x, y, type) {
         var block = createEmptyBlock(x, y, type);
         if (block != null) {
-            $scope.blocks.push(block);
-            fillPageStyle($scope.blocks, $scope.minPos);
-            saveProfile($http, $scope.token, $scope.profile);
+            $scope.page.blocks.push(block);
+            fillPageStyle($scope.page.blocks, $scope.minPos);
+            saveProfile($http, $scope);
         }
     };
-    $scope.onCreateCopyBlock = function (x, y) {
-        $scope.blocks.push({
+    $scope.onCreateCopyBlock = function(x, y) {
+        $scope.page.blocks.push({
             posx: x,
             posy: y,
             type: "copy"
         });
-        fillPageStyle($scope.blocks, $scope.minPos);
+        fillPageStyle($scope.page.blocks, $scope.minPos);
     };
-    $scope.onSwapBlocks = function (b1, b2x, b2y) {
-        var b2 = findBlockByPosition($scope.blocks, b2x, b2y);
+    $scope.onSwapBlocks = function(b1, b2x, b2y) {
+        var b2 = findBlockByPosition($scope.page.blocks, b2x, b2y);
         b2.posx = b1.posx;
         b2.posy = b1.posy;
         b1.posx = b2x;
         b1.posy = b2y;
-        fillPageStyle($scope.blocks, $scope.minPos);
-        saveProfile($http, $scope.token, $scope.profile);
+        fillPageStyle($scope.page.blocks, $scope.minPos);
+        saveProfile($http, $scope);
     };
-    $scope.onDeleteBlock = function (block) {
-        var index = $scope.blocks.indexOf(block);
+    $scope.onDeleteBlock = function(block) {
+        var index = $scope.page.blocks.indexOf(block);
         if (index >= 0) {
-            $scope.blocks.splice(index, 1);
-            fillPageStyle($scope.blocks, $scope.minPos);
-            saveProfile($http, $scope.token, $scope.profile);
+            $scope.page.blocks.splice(index, 1);
+            fillPageStyle($scope.page.blocks, $scope.minPos);
+            saveProfile($http, $scope);
         }
     };
-    $scope.onSearchBlocks = function (block) {
-        $http.get('/api/profile/' + block.fromProfile + "/blocknames")
+    $scope.onSearchBlocks = function(block) {
+        $http.get('/api/profile/blocknames?username=' + block.fromProfile)
             .success(function (blockNames) {
             block.fromBlocks = blockNames;
-        })
-            .error(function (data) {
+        }).error(function (data) {
             console.log('Error: ' + data);
         });
     };
-    $scope.onCopyBlock = function (block) {
-        $http.get('/api/profile/' + block.fromProfile + "/block/" + block.selected)
+    $scope.onCopyBlock = function(block) {
+        $http.get('/api/profile/block?username=' + block.fromProfile + "&block=" + block.selected)
             .success(function (fromBlock) {
             fromBlock.posx = block.posx;
             fromBlock.posy = block.posy;
-            var index = $scope.blocks.indexOf(block);
-            $scope.blocks[index] = fromBlock;
-            fillPageStyle($scope.blocks, $scope.minPos);
-            saveProfile($http, $scope.token, $scope.profile);
-        })
-            .error(function (data) {
+            var index = $scope.page.blocks.indexOf(block);
+            $scope.page.blocks[index] = fromBlock;
+            fillPageStyle($scope.page.blocks, $scope.minPos);
+            saveProfile($http, $scope);
+        }).error(function (data) {
             console.log('Error: ' + data);
         });
     };

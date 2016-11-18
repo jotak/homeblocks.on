@@ -1,20 +1,18 @@
-import ceylon.net.http.server {
-    Server,
-    newServer,
-    Endpoint,
-    equals
+import io.vertx.ceylon.core {
+    vertx_=vertx
 }
-import ceylon.net.http {
-    get
+import io.vertx.ceylon.core.http {
+    HttpServerResponse
 }
-import java.util.concurrent {
-    TimeUnit
+import io.vertx.ceylon.web {
+    router_=router
 }
-import ceylon.io {
-    SocketAddress
-}
+
 import net.homeblocks.server.services {
     ProfilesService
+}
+import io.vertx.ceylon.web.handler {
+    staticHandler
 }
 
 shared void startServer() {
@@ -29,32 +27,36 @@ shared void startServer() {
     //    Meter youhouMtr = metrics.meter("youhou-mtr");
     //    Meter yahaMtr = metrics.meter("yaha-mtr");
 
-    ProfilesService profilesService = ProfilesService("");
+    value vertx = vertx_.vertx();
+    value server = vertx.createHttpServer();
+    value router = router_.router(vertx);
 
-    Server server = newServer {
-        endpoints = allEndpoints(profilesService);
-        //            Endpoint {
-        //                path = equals("/");
-        //                acceptMethod = { get };
-        //                service = ((req, res) {
-        //                    yaha.inc();
-        //                    all.inc();
-        //                    yahaMtr.mark();
-        //                    allMtr.mark();
-        //                    res.writeString("<a href='youhou'>Youhou!!</a>");
-        //                });
-        //            },
-        //            Endpoint {
-        //                path = equals("/youhou");
-        //                acceptMethod = { get };
-        //                service = ((req, res) {
-        //                    youhou.inc();
-        //                    all.inc();
-        //                    youhouMtr.mark();
-        //                    allMtr.mark();
-        //                    res.writeString("<a href='..'>Yaha!!</a>");
-        //                });
-        //            }
-    };
-    server.start(SocketAddress("127.0.0.1", 8081));
+    value endpoints = Endpoints("", vertx);
+
+    endpoints.createEndpoints(router);
+    //        endpoints = allEndpoints(profilesService);
+//        //            Endpoint {
+//        //                path = equals("/");
+//        //                acceptMethod = { get };
+//        //                service = ((req, res) {
+//        //                    yaha.inc();
+//        //                    all.inc();
+//        //                    yahaMtr.mark();
+//        //                    allMtr.mark();
+//        //                    res.writeString("<a href='youhou'>Youhou!!</a>");
+//        //                });
+//        //            },
+//        //            Endpoint {
+//        //                path = equals("/youhou");
+//        //                acceptMethod = { get };
+//        //                service = ((req, res) {
+//        //                    youhou.inc();
+//        //                    all.inc();
+//        //                    youhouMtr.mark();
+//        //                    allMtr.mark();
+//        //                    res.writeString("<a href='..'>Yaha!!</a>");
+//        //                });
+//        //            }
+//    };
+    server.requestHandler(router.accept).listen(8081, "127.0.0.1");
 }

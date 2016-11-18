@@ -2,11 +2,12 @@
 angular.module('homeblocks', [
     'ngRoute',
     'ngSanitize',
+    'homeblocks.loginview',
     'homeblocks.mainview',
     'homeblocks.editview'
 ])
     .config(['$routeProvider', function ($routeProvider) {
-        $routeProvider.otherwise({ redirectTo: '/v/sandbox' });
+        $routeProvider.otherwise({ redirectTo: '/u' });
     }]);
 function computePositions(blocks) {
     var map = {};
@@ -31,14 +32,13 @@ function findBlockByPosition(blocks, x, y) {
     }
     return null;
 }
-function saveProfile($http, token, profile) {
+function saveProfile($http, scope) {
     var deferred = Q.defer();
-    $http.post('/api/profile', { token: token, profile: profile })
-        .success(function (response) {
+    $http.post('/api/user/' + scope.refUser + '/profile/' + scope.profile, scope.page).success(function() {
         deferred.resolve(true);
-    })
-        .error(function (err) {
-        deferred.reject('Error: ' + err);
+    }).error(function(err) {
+        scope.message = 'Error: ' + err;
+        deferred.reject(scope.message);
     });
     return deferred.promise;
 }
@@ -85,4 +85,56 @@ function computeBlockStyle(block) {
     block.EStyle = "margin-left: " + (marginLeft + 200) + "px; margin-top: " + (marginTop + 100) + "px;";
     block.WStyle = "margin-left: " + marginLeft + "px; margin-top: " + (marginTop + 100) + "px;";
     return block.style;
+}
+function isFreePosition(pos, page) {
+    for (var i in page.blocks) {
+        var block = page.blocks[i];
+        if (pos.x == block.posx && pos.y == block.posy) {
+            return false;
+        }
+    }
+    return true;
+}
+function findFreePosition(page) {
+    // Spiral algorithm
+    var deep = 0;
+    var fRounds = function(d) { return (2*d+1) * (2*d+1); };
+    var nRounds = fRounds(deep);
+    var t = 0;
+    var fpos = function(x,y) { return {x: x, y: y}};
+    var pos = fpos(0, 0);
+    var ops = [
+        function(p) {return fpos(p.x+1, p.y) },
+        function(p) {return fpos(p.x, p.y+1) },
+        function(p) {return fpos(p.x-1, p.y) },
+        function(p) {return fpos(p.x, p.y-1) }];
+    var curOp = 0;
+    while (!isFreePosition(pos, page)) {
+        t++;
+        if (t == nRounds) {
+            deep++;
+            nRounds = fRounds(deep);
+        }
+        var testPos = ops[curOp](pos);
+        if (Math.abs(testPos.x) > deep || Math.abs(testPos.y) > deep) {
+            // Invalid operation; increment op cursor
+            curOp = (curOp + 1) % 4;
+            pos = ops[curOp](pos);
+        } else {
+            pos = testPos;
+        }
+        if (t > 999) {
+            console.error("WTF you want to kill me?!");
+            break;
+        }
+    }
+    return pos;
+}
+function mergeInPage(page, blocks) {
+    for (var i in blocks) {
+        var pos = findFreePosition(page);
+        blocks[i].posx = pos.x;
+        blocks[i].posy = pos.y;
+        page.blocks.push(blocks[i]);
+    }
 }
