@@ -1,6 +1,7 @@
 .ceylon/
 modules/
 secrets/
+users/
 
 *.iml
 .idea/

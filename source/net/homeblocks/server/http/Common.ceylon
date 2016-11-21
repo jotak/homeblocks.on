@@ -15,6 +15,10 @@ Promise<Object> parseBodyObject(HttpServerRequest req) {
     value deferred = Deferred<Object>();
     req.bodyHandler((buffer) {
         String content = buffer.getString(0, buffer.length());
+        if (content.empty) {
+            deferred.fulfill(Object());
+            return;
+        }
         switch (val = parse(content))
         case (is Object) {
             deferred.fulfill(val);

@@ -1,6 +1,5 @@
 import ceylon.json {
-    Object,
-    InvalidTypeException
+    Object
 }
 
 class MainBlock(Integer posx, Integer posy, String? title)
