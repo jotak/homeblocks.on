@@ -1,5 +1,4 @@
 import ceylon.collection {
-    LinkedList,
     ArrayList
 }
 import ceylon.file {
@@ -7,23 +6,28 @@ import ceylon.file {
     Path,
     parsePath
 }
+import ceylon.json {
+    Object
+}
 
 import io.vertx.ceylon.core {
     Vertx
 }
 
+import net.homeblocks.server.util {
+    files
+}
+
 shared class OAuthProviders(String strRoot, Vertx vertx) {
 
     Path fsRoot = parsePath(strRoot);
-    String? readSecret(String name) {
+    Object? readSecret(String name) {
         if (is File file = fsRoot.childPath("secrets").childPath(name).resource) {
-            try (reader = file.Reader()) {
-                value content = LinkedList<String>();
-                while (exists line = reader.readLine()) {
-                    content.add(line);
-                }
-                return "\n".join(content);
+            if (is Object json = files.readJson(file)) {
+                return json;
             }
+            print("Invalid secret file for " + name);
+            return null;
         }
         print("Secret not found for " + name);
         return null;

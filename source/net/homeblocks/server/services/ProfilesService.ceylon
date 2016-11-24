@@ -5,8 +5,7 @@ import ceylon.file {
     Directory
 }
 import ceylon.json {
-    Object,
-    parse
+    Object
 }
 import ceylon.promise {
     Promise,
@@ -19,7 +18,8 @@ import net.homeblocks.data.model {
     emptyPage
 }
 import net.homeblocks.server.util {
-    promises
+    promises,
+    files
 }
 
 shared class ProfilesService(UsersService usersService) {
@@ -41,16 +41,10 @@ shared class ProfilesService(UsersService usersService) {
     shared Promise<Page> load(Integer userID, String profile) {
         value deferred = Deferred<Page>();
         if (is File file = profilePath(userID, profile).resource) {
-            try (reader = file.Reader()) {
-                variable String fileContent = "";
-                while (exists line = reader.readLine()) {
-                    fileContent += "\n" + line;
-                }
-                if (is Object json = parse(fileContent)) {
-                    deferred.fulfill(jsonPage.deserialize(json));
-                } else {
-                    promises.reject(deferred, "Can't load profile: json root should be an object");
-                }
+            if (is Object json = files.readJson(file)) {
+                deferred.fulfill(jsonPage.deserialize(json));
+            } else {
+                promises.reject(deferred, "Can't load profile: json root should be an object");
             }
         } else {
             promises.reject(deferred, "Can't load profile: file not found");

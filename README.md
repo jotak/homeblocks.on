@@ -31,4 +31,7 @@ docker build -t jotak/homeblocks-cache .
 ```bash
 docker build -t jotak/homeblocks .
 docker run -i -p 8081:8081 --name homeblocks --rm jotak/homeblocks
+
+# Run with secrets and users volumes in current directory:
+docker run -i -p 8081:8081 -v `pwd`/secrets:/app/secrets -v `pwd`/users:/app/users --name homeblocks --rm jotak/homeblocks
 ```

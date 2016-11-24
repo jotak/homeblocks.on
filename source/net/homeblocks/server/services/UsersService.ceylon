@@ -9,8 +9,7 @@ import ceylon.file {
 }
 import ceylon.json {
     Array,
-    Object,
-    parse
+    Object
 }
 import ceylon.promise {
     Promise,
@@ -26,7 +25,8 @@ import net.homeblocks.data.model {
     jsonUserInfo
 }
 import net.homeblocks.server.util {
-    promises
+    promises,
+    files
 }
 
 shared class UsersService(String strRoot) {
@@ -56,34 +56,28 @@ shared class UsersService(String strRoot) {
                 writer.write("[]");
             }
         } else if (is File indexFile) {
-            try (reader = indexFile.Reader()) {
-                variable String fileContent = "";
-                while (exists line = reader.readLine()) {
-                    fileContent += "\n" + line;
-                }
-                if (is Array users = parse(fileContent)) {
-                    for (userJson in users) {
-                        switch (userJson)
-                        case (is Object) {
-                            value userInfo = jsonUserInfo.deserialize(userJson);
-                            value provKey = providerKey(userInfo);
-                            if (!usersIndex.keys.contains(userInfo.intIdx),
-                                    !aliasUsersIndex.keys.contains(userInfo.name),
-                                    !providerUsersIndex.keys.contains(provKey)) {
-                                usersIndex.put(userInfo.intIdx, userInfo);
-                                aliasUsersIndex.put(userInfo.name, userInfo);
-                                providerUsersIndex.put(provKey, userInfo);
-                            } else {
-                                print("Cannot load index for user " + userInfo.intIdx.string + " (" + userInfo.name
-                                + "), index or alias already used");
-                            }
+            if (is Array users = files.readJson(indexFile)) {
+                for (userJson in users) {
+                    switch (userJson)
+                    case (is Object) {
+                        value userInfo = jsonUserInfo.deserialize(userJson);
+                        value provKey = providerKey(userInfo);
+                        if (!usersIndex.keys.contains(userInfo.intIdx),
+                                !aliasUsersIndex.keys.contains(userInfo.name),
+                                !providerUsersIndex.keys.contains(provKey)) {
+                            usersIndex.put(userInfo.intIdx, userInfo);
+                            aliasUsersIndex.put(userInfo.name, userInfo);
+                            providerUsersIndex.put(provKey, userInfo);
+                        } else {
+                            print("Cannot load index for user " + userInfo.intIdx.string + " (" + userInfo.name
+                            + "), index or alias already used");
                         }
-                        case (is Null) {
-                            print("Users index corrupted, object expected but got null");
-                        }
-                        else {
-                            print("Users index corrupted, object expected but got: " + userJson.string);
-                        }
+                    }
+                    case (is Null) {
+                        print("Users index corrupted, object expected but got null");
+                    }
+                    else {
+                        print("Users index corrupted, object expected but got: " + userJson.string);
                     }
                 }
             }

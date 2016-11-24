@@ -22,12 +22,12 @@ import net.homeblocks.server.util {
     promises
 }
 
-class GithubOAuth(Vertx vertx, String secret) extends OAuthProvider(
+class GithubOAuth(Vertx vertx, Object secret) extends OAuthProvider(
             "gh",
             "GitHub",
             oAuth2Auth.create(vertx, "AUTH_CODE", OAuth2ClientOptions {
-                clientID = "d0830e4dc511457c16ad";
-                clientSecret = secret;
+                clientID = secret.getString("clientID");
+                clientSecret = secret.getString("secret");
                 site = "https://github.com/login";
                 tokenPath = "/oauth/access_token";
                 authorizationPath = "/oauth/authorize";
