@@ -5,9 +5,6 @@ import ceylon.json {
     Object
 }
 
-import io.vertx.ceylon.auth.oauth2 {
-    AccessToken
-}
 import io.vertx.ceylon.web {
     Router,
     RoutingContext
@@ -54,11 +51,11 @@ void registerAuthEndpoints(UsersService usersService, OAuthProviders oauthProvid
     router.post("/api/login").handler((RoutingContext ctx) {
         parseBodyObject(ctx.request()).completed {
                     (json) {
-                        String token = UUID.randomUUID().string;
-                        tmpStates.put(token, json);
+                        String state = UUID.randomUUID().string;
+                        tmpStates.put(state, json);
                         [String, String][] loginPageInfo = oauthProviders.providers.map((prov) {
-                            value authorizationUrl = prov.oAuth2.authorizeURL(Object { "state" -> token });
-                            return [prov.displayName, authorizationUrl];
+                            value authorizationUrl = prov.authorizeUrl(state);
+                            return ["Login with " + prov.displayName, authorizationUrl];
                         }).sequence();
                         ctx.response().end(loginProfile(loginPageInfo).string);
                     };
@@ -99,25 +96,25 @@ void registerAuthEndpoints(UsersService usersService, OAuthProviders oauthProvid
                 if (!tmpStates.keys.contains(state)) {
                     error(ctx, 403, "Invalid state");
                 } else {
-                    prov.oAuth2.getToken(Object { "code" -> code },
-                        (AccessToken|Throwable res) {
-                            if (is Throwable res) {
-                                res.printStackTrace();
-                                error(ctx, 403, res.string);
-                            } else {
+                    prov.getToken(code).completed {
+                        (res) {
 //                                User user = res;
 //                                ctx.setUser(user);
-                                prov.getUID(res)
-                                    .flatMap((username) => usersService.findOrCreate(prov.providerName, username))
-                                    .completed {
-                                            (userInfo) {
-                                                ctx.session()?.put("user", HttpUser(res, userInfo, state));
-                                                ctx.reroute("/reroute.html");
-                                            };
-                                            (err) => error(ctx, 403, err.string);
-                                };
-                            }
-                        });
+                            prov.getUID(res)
+                                .flatMap((username) => usersService.findOrCreate(prov.providerName, username))
+                                .completed {
+                                        (userInfo) {
+                                            ctx.session()?.put("user", HttpUser(res, userInfo, state));
+                                            ctx.reroute("/reroute.html");
+                                        };
+                                        (err) => error(ctx, 403, err.string);
+                            };
+                        };
+                        (err) {
+                            err.printStackTrace();
+                            error(ctx, 403, err.message);
+                        };
+                    };
                 }
             } else {
                 error(ctx, 403, "Authentication failure");

@@ -37,6 +37,9 @@ shared class OAuthProviders(String strRoot, Vertx vertx) {
     if (exists secret = readSecret("github")) {
         tmpProviders.add(GithubOAuth(vertx, secret));
     }
+    if (exists secret = readSecret("yahoo")) {
+        tmpProviders.add(YahooOAuth(vertx, secret));
+    }
 
     shared [OAuthProvider*] providers = tmpProviders.sequence();
 }

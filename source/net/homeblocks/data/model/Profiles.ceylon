@@ -18,7 +18,7 @@ shared Object notFound404Profile() {
 shared Object loginProfile([String, String][] authProviders) {
     value page = Page([
         LinksBlock(
-            authProviders.map(([String, String] p) => Link(p[0], p[1], "Login with " + p[0])).sequence(), 0, 0, "Login")
+            authProviders.map(([String, String] p) => Link(p[0], p[1], p[0])).sequence(), 0, 0, "Login")
     ]);
 
     return Object {

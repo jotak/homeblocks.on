@@ -36,6 +36,23 @@ class GithubOAuth(Vertx vertx, Object secret) extends OAuthProvider(
                 };
             })) {
 
+    shared actual String authorizeUrl(String state) {
+        return oAuth2.authorizeURL(Object { "state" -> state });
+    }
+
+    shared actual Promise<AccessToken> getToken(String authCode) {
+        value def = Deferred<AccessToken>();
+        oAuth2.getToken(Object { "code" -> authCode },
+            (AccessToken|Throwable res) {
+                if (is Throwable res) {
+                    promises.reject(def, res);
+                } else {
+                    def.fulfill(res);
+                }
+            });
+        return def.promise;
+    }
+
     shared actual Promise<String> getUID(AccessToken token) {
         value def = Deferred<String>();
         if (exists strToken = token.principal().getStringOrNull("access_token")) {

@@ -11,12 +11,13 @@ angular.module('homeblocks', [
     }]);
 function computePositions(blocks) {
     var map = {};
-    for (var i in blocks) {
-        var block = blocks[i];
+    var block, i;
+    for (i in blocks) {
+        block = blocks[i];
         map[block.posx + "," + block.posy] = block;
     }
-    for (var i in blocks) {
-        var block = blocks[i];
+    for (i in blocks) {
+        block = blocks[i];
         block.N = map[block.posx + "," + (block.posy - 1)] !== undefined;
         block.S = map[block.posx + "," + (block.posy + 1)] !== undefined;
         block.E = map[(block.posx + 1) + "," + block.posy] !== undefined;
@@ -44,11 +45,11 @@ function saveProfile($http, scope) {
 }
 function fillPageStyle(blocks, minPos) {
     computePositions(blocks);
-    var id = 0;
-    for (var i in blocks) {
+    var id = 0, i;
+    for (i in blocks) {
         minPos = checkOutOfScreen(blocks[i], minPos);
     }
-    for (var i in blocks) {
+    for (i in blocks) {
         fillBlockStyle(blocks[i], id++, minPos);
     }
 }
@@ -76,10 +77,10 @@ function fillBlockStyle(block, id, minPos) {
     block.id = id;
     computeBlockStyle(block);
 }
-var effects = ["translate1", "translate2", "translate3"];
+var effectTypes = ["translate", "fade", "rotate", "scale"];
+var effectType = effectTypes[Math.floor(Math.random()*effectTypes.length)];
 function getRandomEffect() {
-    var rnd = Math.floor(Math.random()*effects.length);
-    var effect = effects[rnd];
+    var effect = effectType + Math.floor(1 + Math.random()*3);
     var duration = Math.floor((2+Math.random()*20)) / 20.0;
     return "-moz-animation-name: " + effect + "; -moz-animation-iteration-count: 1; -moz-animation-timing-function: ease-in; -moz-animation-duration: " + duration + "s;"
         + "-webkit-animation-name: " + effect + "; -webkit-animation-iteration-count: 1; -webkit-animation-timing-function: ease-in; -webkit-animation-duration: " + duration + "s;"
