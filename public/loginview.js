@@ -11,7 +11,7 @@ angular.module('homeblocks.loginview', ['ngRoute'])
             $rootScope.title = ctx.title;
             $scope.page = ctx.page;
             $scope.minPos = {x: 0, y: 0};
-            fillPageStyle($scope.page.blocks, $scope.minPos);
+            fillPageStyle($scope.page.blocks, $scope.minPos, true);
         }).error(function (data) {
             console.log('Error: ' + data);
         });

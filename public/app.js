@@ -43,14 +43,14 @@ function saveProfile($http, scope) {
     });
     return deferred.promise;
 }
-function fillPageStyle(blocks, minPos) {
+function fillPageStyle(blocks, minPos, animateAll) {
     computePositions(blocks);
     var id = 0, i;
     for (i in blocks) {
         minPos = checkOutOfScreen(blocks[i], minPos);
     }
     for (i in blocks) {
-        fillBlockStyle(blocks[i], id++, minPos);
+        fillBlockStyle(blocks[i], id++, minPos, animateAll || blocks[i].animate);
     }
 }
 function checkOutOfScreen(block, minPos) {
@@ -66,7 +66,7 @@ function checkOutOfScreen(block, minPos) {
     }
     return minPos;
 }
-function fillBlockStyle(block, id, minPos) {
+function fillBlockStyle(block, id, minPos, animate) {
     block.styleData = {
         marginLeft: -minPos.x - FrontBlock.HALF_WIDTH + block.posx * FrontBlock.WIDTH,
         marginTop: -minPos.y - FrontBlock.HALF_HEIGHT + block.posy * FrontBlock.HEIGHT,
@@ -75,7 +75,7 @@ function fillBlockStyle(block, id, minPos) {
         dy: 0
     };
     block.id = id;
-    computeBlockStyle(block);
+    computeBlockStyle(block, animate);
 }
 var effectTypes = ["translate", "fade", "rotate", "scale"];
 var effectType = effectTypes[Math.floor(Math.random()*effectTypes.length)];
@@ -86,10 +86,13 @@ function getRandomEffect() {
         + "-webkit-animation-name: " + effect + "; -webkit-animation-iteration-count: 1; -webkit-animation-timing-function: ease-in; -webkit-animation-duration: " + duration + "s;"
         + "animation-name: " + effect + "; animation-iteration-count: 1; animation-timing-function: ease-in; animation-duration: " + duration + "s;";
 }
-function computeBlockStyle(block) {
+function computeBlockStyle(block, animate) {
     var marginLeft = block.styleData.marginLeft + block.styleData.dx;
     var marginTop = block.styleData.marginTop + block.styleData.dy;
-    block.style = "margin-left: " + marginLeft + "px; margin-top: " + marginTop + "px; background-color: " + block.styleData.color + "; " + getRandomEffect();
+    block.style = "margin-left: " + marginLeft + "px; margin-top: " + marginTop + "px; background-color: " + block.styleData.color + "; ";
+    if (animate) {
+        block.style += getRandomEffect();
+    }
     block.NStyle = "margin-left: " + (marginLeft + 100) + "px; margin-top: " + marginTop + "px;";
     block.SStyle = "margin-left: " + (marginLeft + 100) + "px; margin-top: " + (marginTop + 200) + "px;";
     block.EStyle = "margin-left: " + (marginLeft + 200) + "px; margin-top: " + (marginTop + 100) + "px;";

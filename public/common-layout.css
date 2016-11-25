@@ -144,6 +144,14 @@ ul.btn-west {
     width: 200px;
 }
 
+#ulJson,
+#dlJson {
+    width: 600px;
+    height: 400px;
+    z-index: 1;
+    position: relative;
+}
+
 /* TRANSLATIONS */
 @-moz-keyframes translate1 {
     0% { -moz-transform: translateY(-40px); }

@@ -43,6 +43,7 @@ angular.module('homeblocks.mainview', ['ngRoute'])
             $rootScope.title = ctx.title;
             $scope.refUser = ctx.refUser;
             $scope.profile = ctx.profile;
+            $scope.strJson = JSON.stringify(ctx.page);
             $scope.page = ctx.page;
             $scope.page.message = "";
             $scope.logged = ctx.logged;
@@ -54,7 +55,7 @@ angular.module('homeblocks.mainview', ['ngRoute'])
                 $scope.isAtHome = false;
             }
             $scope.minPos = { x: 0, y: 0 };
-            fillPageStyle($scope.page.blocks, $scope.minPos);
+            fillPageStyle($scope.page.blocks, $scope.minPos, true);
             initMainListeners($scope, $location, $http);
         }).error(function(data) {
             console.log('Error: ' + data);
@@ -100,21 +101,13 @@ function initMainListeners($scope, $location, $http) {
         });
     };
     $scope.onUpload = function(uploaded) {
-        // var fromProfile = eval('(' + uploaded + ')');
-        // $scope.profile = fromProfile.name;
-        // $scope.profile.page = fromProfile.page;
-        // $http.put('/api/user/' + $scope.profile.refUser + '/profile/' + $scope.profile.name, fromProfile.page)
-        //     .success(function() {
-        //         $scope.minPos = { x: 0, y: 0 };
-        //         fillPageStyle($scope.profile.page.blocks, $scope.minPos);
-        //     })
-        //     .error(function (err) {
-        //         console.error(err);
-        //         $scope.page.message = err;
-        //     });
-    };
-    $scope.onDownload = function() {
-        // TODO
+        if (confirm("Uploading json will erase the current profile. Continue?")) {
+            $scope.showUpload = !$scope.showUpload;
+            $scope.page = eval('(' + uploaded + ')');
+            saveProfile($http, $scope);
+            $scope.minPos = {x: 0, y: 0};
+            fillPageStyle($scope.page.blocks, $scope.minPos, true);
+        }
     };
     $scope.onClickNew = function() {
         $scope.showNew = !$scope.showNew;
@@ -125,10 +118,21 @@ function initMainListeners($scope, $location, $http) {
     $scope.onClickEdit = function() {
         $location.path("/u/" + $scope.refUser + "/" + $scope.profile + "/e");
     };
+    $scope.onClickUpload = function() {
+        $scope.showUpload = !$scope.showUpload;
+        setTimeout(function () {
+            document.getElementById('ulJson').focus();
+        }, 30);
+    };
     $scope.onClickDownload = function() {
+        $scope.showJson = !$scope.showJson;
+        setTimeout(function () {
+            document.getElementById('dlJson').focus();
+        }, 30);
     };
     $scope.onClickLogin = function() {
         $http.post('/api/login', {refUser: $scope.refUser, profile: $scope.profile}).success(function(ctx) {
+            ctx.page.blocks.forEach(function(b) { b.animate = true; });
             mergeInPage($scope.page, ctx.page.blocks);
             $scope.minPos = {x: 0, y: 0};
             fillPageStyle($scope.page.blocks, $scope.minPos);

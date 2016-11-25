@@ -71,18 +71,11 @@ function initEditListeners($scope, $location, $http, $document) {
     $scope.onCreateBlock = function(x, y, type) {
         var block = createEmptyBlock(x, y, type);
         if (block != null) {
+            block.animate = true;
             $scope.page.blocks.push(block);
             fillPageStyle($scope.page.blocks, $scope.minPos);
             saveProfile($http, $scope);
         }
-    };
-    $scope.onCreateCopyBlock = function(x, y) {
-        $scope.page.blocks.push({
-            posx: x,
-            posy: y,
-            type: "copy"
-        });
-        fillPageStyle($scope.page.blocks, $scope.minPos);
     };
     $scope.onSwapBlocks = function(b1, b2x, b2y) {
         var b2 = findBlockByPosition($scope.page.blocks, b2x, b2y);
@@ -90,6 +83,8 @@ function initEditListeners($scope, $location, $http, $document) {
         b2.posy = b1.posy;
         b1.posx = b2x;
         b1.posy = b2y;
+        b1.animate = true;
+        b2.animate = true;
         fillPageStyle($scope.page.blocks, $scope.minPos);
         saveProfile($http, $scope);
     };
@@ -100,27 +95,6 @@ function initEditListeners($scope, $location, $http, $document) {
             fillPageStyle($scope.page.blocks, $scope.minPos);
             saveProfile($http, $scope);
         }
-    };
-    $scope.onSearchBlocks = function(block) {
-        $http.get('/api/profile/blocknames?username=' + block.fromProfile)
-            .success(function (blockNames) {
-            block.fromBlocks = blockNames;
-        }).error(function (data) {
-            console.log('Error: ' + data);
-        });
-    };
-    $scope.onCopyBlock = function(block) {
-        $http.get('/api/profile/block?username=' + block.fromProfile + "&block=" + block.selected)
-            .success(function (fromBlock) {
-            fromBlock.posx = block.posx;
-            fromBlock.posy = block.posy;
-            var index = $scope.page.blocks.indexOf(block);
-            $scope.page.blocks[index] = fromBlock;
-            fillPageStyle($scope.page.blocks, $scope.minPos);
-            saveProfile($http, $scope);
-        }).error(function (data) {
-            console.log('Error: ' + data);
-        });
     };
 }
 function createEmptyBlock(x, y, type) {
