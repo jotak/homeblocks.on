@@ -30,6 +30,8 @@ abstract class JsonBlock() of jsonBlock {
         case ("audio") jsonAudioBlock.deserialize(json)
         case ("video") jsonVideoBlock.deserialize(json)
         case ("image") jsonImageBlock.deserialize(json)
+        case ("list") jsonListBlock.deserialize(json)
+        case ("note") jsonNoteBlock.deserialize(json)
         case ("main") jsonMainBlock.deserialize(json)
         else null;
         if (exists block) {

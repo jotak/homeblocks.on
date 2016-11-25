@@ -34,14 +34,14 @@ function initEditListeners($scope, $location, $http, $document) {
             document.getElementById(focusId).focus();
         }, 30);
     };
-    $scope.onClickLink = function(link, focusId) {
-        link.editing = true;
+    $scope.onEditItem = function(item, focusId) {
+        item.editing = true;
         setTimeout(function () {
             document.getElementById(focusId).focus();
         }, 30);
     };
-    $scope.onSaveLink = function(link) {
-        link.editing = false;
+    $scope.onSaveItem = function(item) {
+        item.editing = false;
         saveProfile($http, $scope);
     };
     $scope.onCreateLink = function(block) {
@@ -54,14 +54,22 @@ function initEditListeners($scope, $location, $http, $document) {
         block.links.push(link);
         saveProfile($http, $scope);
     };
-    $scope.onDeleteLink = function(block, index) {
-        block.links.splice(index, 1);
+    $scope.onCreateListItem = function(block) {
+        var item = {
+            value: "",
+            editing: true
+        };
+        block.list.push(item);
         saveProfile($http, $scope);
     };
-    $scope.onLinkUp = function(block, index) {
-        var tmp = block.links[index - 1];
-        block.links[index - 1] = block.links[index];
-        block.links[index] = tmp;
+    $scope.onDeleteItem = function(list, index) {
+        list.splice(index, 1);
+        saveProfile($http, $scope);
+    };
+    $scope.onItemUp = function(list, index) {
+        var tmp = list[index - 1];
+        list[index - 1] = list[index];
+        list[index] = tmp;
         saveProfile($http, $scope);
     };
     $scope.onSaveBlock = function(block) {
@@ -89,11 +97,13 @@ function initEditListeners($scope, $location, $http, $document) {
         saveProfile($http, $scope);
     };
     $scope.onDeleteBlock = function(block) {
-        var index = $scope.page.blocks.indexOf(block);
-        if (index >= 0) {
-            $scope.page.blocks.splice(index, 1);
-            fillPageStyle($scope.page.blocks, $scope.minPos);
-            saveProfile($http, $scope);
+        if (confirm("Delete this block?")) {
+            var index = $scope.page.blocks.indexOf(block);
+            if (index >= 0) {
+                $scope.page.blocks.splice(index, 1);
+                fillPageStyle($scope.page.blocks, $scope.minPos);
+                saveProfile($http, $scope);
+            }
         }
     };
 }
@@ -104,8 +114,11 @@ function createEmptyBlock(x, y, type) {
     block.type = type;
     if (type == "links" || type == "audio" || type == "video" || type == "image") {
         block.links = [];
-    }
-    else {
+    } else if (type == "list") {
+        block.list = [];
+    } else if (type == "note") {
+        block.note = "";
+    } else {
         console.log("Type " + type + " not implemented (yet?)");
         return null;
     }

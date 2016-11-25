@@ -152,6 +152,16 @@ ul.btn-west {
     position: relative;
 }
 
+.edit-block-note {
+    height: 125px;
+}
+
+.block ul.block-list-ul {
+    list-style-type: circle;
+    margin-left: 25px;
+    text-align: left;
+}
+
 /* TRANSLATIONS */
 @-moz-keyframes translate1 {
     0% { -moz-transform: translateY(-40px); }
