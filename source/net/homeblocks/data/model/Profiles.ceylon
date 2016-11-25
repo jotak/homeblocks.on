@@ -3,19 +3,29 @@ import ceylon.json { Object }
 shared Object notFound404Profile() {
     value page = Page([
         MainBlock(0, 0, null),
-        LinksBlock([
-            Link("Homeblocks", "http://www.homeblocks.net/#v/sandbox", "Build your homepage, block after block! Feel free to edit the sandbox (no password), or create a new profile."),
-            Link("Homeblocks/jotak", "http://www.homeblocks.net/#/v/jotak", "Example: @jotak's homepage"),
-            Link("Homeblocks@GitHub", "https://github.com/jotak/homeblocks", "Fork me on github!")],
-            1, 0, "Awesome sites")]);
+        NoteBlock("<h3>404,<br/> Blocks not found!</h3><br/>Oops, looks like you entered a wrong URL", -1, -1, ""),
+        LinksBlock([ Link("homeblocks.net", "http://www.homeblocks.net/", "Start page") ], 1, 1, "Try here")]);
 
     return Object {
-            "title" -> "404 not found!",
+            "title" -> "404",
             "page" -> page.json()
     };
 }
 
 shared Object loginProfile([String, String][] authProviders) {
+    value page = Page([
+        LinksBlock(
+            authProviders.map(([String, String] p) => Link(p[0], p[1], p[0])).sequence(), 0, 0, "Login"),
+        NoteBlock("<h3>Welcome to Homeblocks.net</h3><br/>Build your homepage, block after block!", -1, -1, "")
+    ]);
+
+    return Object {
+            "title" -> "login",
+            "page" -> page.json()
+    };
+}
+
+shared Object singleBlockLoginProfile([String, String][] authProviders) {
     value page = Page([
         LinksBlock(
             authProviders.map(([String, String] p) => Link(p[0], p[1], p[0])).sequence(), 0, 0, "Login")

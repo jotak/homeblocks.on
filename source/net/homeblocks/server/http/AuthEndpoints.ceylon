@@ -16,7 +16,8 @@ import java.util {
 
 import net.homeblocks.data.model {
     loginProfile,
-    UserInfo
+    UserInfo,
+    singleBlockLoginProfile
 }
 import net.homeblocks.server.security {
     OAuthProviders
@@ -48,17 +49,22 @@ void registerAuthEndpoints(UsersService usersService, OAuthProviders oauthProvid
         return null;
     }
 
+    [String, String][] buildLoginPageInfo(Object json) {
+        String state = UUID.randomUUID().string;
+        tmpStates.put(state, json);
+        return oauthProviders.providers.map((prov) {
+            value authorizationUrl = prov.authorizeUrl(state);
+            return ["Login with " + prov.displayName, authorizationUrl];
+        }).sequence();
+    }
+
+    router.get("/api/login").handler((RoutingContext ctx) {
+        ctx.response().end(loginProfile(buildLoginPageInfo(Object())).string);
+    });
+
     router.post("/api/login").handler((RoutingContext ctx) {
         parseBodyObject(ctx.request()).completed {
-                    (json) {
-                        String state = UUID.randomUUID().string;
-                        tmpStates.put(state, json);
-                        [String, String][] loginPageInfo = oauthProviders.providers.map((prov) {
-                            value authorizationUrl = prov.authorizeUrl(state);
-                            return ["Login with " + prov.displayName, authorizationUrl];
-                        }).sequence();
-                        ctx.response().end(loginProfile(loginPageInfo).string);
-                    };
+                    (json) => ctx.response().end(singleBlockLoginProfile(buildLoginPageInfo(json)).string);
                     (err) => error(ctx, 500, err.message);
         };
     });

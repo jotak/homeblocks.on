@@ -7,7 +7,7 @@ angular.module('homeblocks.loginview', ['ngRoute'])
         });
     }]).controller("loginViewCtrl", ['$scope', '$http', '$routeParams', '$rootScope', '$location', function ($scope, $http, $routeParams, $rootScope, $location) {
         $rootScope.title = "homeblocks";
-        $http.post('/api/login').success(function(ctx) {
+        $http.get('/api/login').success(function(ctx) {
             $rootScope.title = ctx.title;
             $scope.page = ctx.page;
             $scope.minPos = {x: 0, y: 0};
