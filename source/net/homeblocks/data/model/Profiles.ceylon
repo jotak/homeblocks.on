@@ -4,7 +4,7 @@ shared Object notFound404Profile() {
     value page = Page([
         MainBlock(0, 0, null),
         NoteBlock("<h3>404,<br/> Blocks not found!</h3><br/>Oops, looks like you entered a wrong URL", -1, -1, ""),
-        LinksBlock([ Link("homeblocks.net", "http://www.homeblocks.net/", "Start page") ], 1, 1, "Try here")]);
+        LinksBlock([ Link("homeblocks.net", "http://www.homeblocks.net/#/u", "Start page") ], 1, 1, "Try here")]);
 
     return Object {
             "title" -> "404",
