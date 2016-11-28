@@ -26,6 +26,10 @@ body {
     box-sizing: border-box;
 }
 
+.block.read {
+    overflow: auto;
+}
+
 .block.selected {
     border: 5px solid #297;
 }
@@ -62,6 +66,12 @@ body {
 .block input {
     z-index: 2;
     position: relative;
+}
+
+.block i.block-type {
+    position: absolute;
+    top: 5px;
+    left: 5px;
 }
 
 .hidden {
@@ -160,6 +170,20 @@ ul.btn-west {
     list-style-type: circle;
     margin-left: 25px;
     text-align: left;
+}
+
+.block ul.block-image {
+    margin: -8px 0 0 0;
+    padding: 0;
+}
+
+.block .block-image li {
+    transition: opacity 2s;
+    opacity: 0;
+}
+
+.block .block-image li.visible {
+    opacity: 1;
 }
 
 /* TRANSLATIONS */

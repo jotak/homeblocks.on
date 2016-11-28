@@ -151,3 +151,15 @@ function mergeInPage(page, blocks) {
         page.blocks.push(blocks[i]);
     }
 }
+function enterBlock($scope, block) {
+    if (block.type == "image") {
+        block.active = 0;
+        if (block.links.length > 1) {
+            // Slideshow
+            setInterval(function () {
+                block.active = (block.active + 1) % block.links.length;
+                $scope.$apply();
+            }, 10000);
+        }
+    }
+}

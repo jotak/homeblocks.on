@@ -57,6 +57,7 @@ angular.module('homeblocks.mainview', ['ngRoute'])
             $scope.minPos = { x: 0, y: 0 };
             fillPageStyle($scope.page.blocks, $scope.minPos, true);
             initMainListeners($scope, $location, $http);
+            $scope.page.blocks.forEach(function(b) { enterBlock($scope, b); });
         }).error(function(data) {
             console.log('Error: ' + data);
         });
