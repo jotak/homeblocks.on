@@ -66,18 +66,31 @@ function checkOutOfScreen(block, minPos) {
     }
     return minPos;
 }
+var lightBlockColor = function() {
+    // With R, G, B: one is 30, one is 60, the third is rnd[30-60]
+    var rgb = ["30", "60", "" + (30 + Math.floor(Math.random()*30))];
+    // Shuffle rgb
+    var j, x, i;
+    for (i = 2; i > 0; i--) {
+        j = Math.floor(Math.random() * (i + 1));
+        x = rgb[i];
+        rgb[i] = rgb[j];
+        rgb[j] = x;
+    }
+    return "#" + rgb[0] + rgb[1] + rgb[2];
+}();
 function fillBlockStyle(block, id, minPos, animate) {
     block.styleData = {
         marginLeft: -minPos.x - FrontBlock.HALF_WIDTH + block.posx * FrontBlock.WIDTH,
         marginTop: -minPos.y - FrontBlock.HALF_HEIGHT + block.posy * FrontBlock.HEIGHT,
-        color: ((block.posx + block.posy) % 2) ? "#34495e" : "#020202",
+        color: ((block.posx + block.posy) % 2) ? lightBlockColor : "#020202",
         dx: 0,
         dy: 0
     };
     block.id = id;
     computeBlockStyle(block, animate);
 }
-var effectTypes = ["translate", "fade", "rotate", "scale"];
+var effectTypes = ["translate", "rotate", "scale", "color"];
 var effectType = effectTypes[Math.floor(Math.random()*effectTypes.length)];
 function getRandomEffect() {
     var effect = effectType + Math.floor(1 + Math.random()*3);

@@ -35,3 +35,10 @@ sudo systemctl enable homeblocks.service
 ```
 
 **On AWS (Amazon linux)**
+
+```
+ssh -i "aws-homeblocks.pem" ec2-user@ec2-54-186-250-175.us-west-2.compute.amazonaws.com
+```
+
+Startup script in /etc/rc.local
+To update, just push (from local) the new docker image, and pull from AWS instance, then reboot instance

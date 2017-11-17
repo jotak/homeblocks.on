@@ -16,7 +16,7 @@ body {
 }
 
 .block {
-    padding-top: 8px;
+    padding-top: 5px;
     position: absolute;
     top: 50%;
     left: 50%;
@@ -34,14 +34,18 @@ body {
     border: 5px solid #297;
 }
 
+.block-title {
+    font-size: 11pt;
+}
+
 .block ul {
     list-style-type: none;
     padding: 0;
-    margin: 10px 0 0;
+    margin: 5px 0 0;
+    line-height: 130%;
 }
 
 .block a {
-    font-weight: bold;
     text-decoration: none;
     color: #1abc9c;
     cursor: pointer;
@@ -173,7 +177,7 @@ ul.btn-west {
 }
 
 .block ul.block-image {
-    margin: -8px 0 0 0;
+    margin: -5px 0 0 0;
     padding: 0;
 }
 
@@ -224,55 +228,6 @@ ul.btn-west {
 @keyframes translate3 {
     0% { transform: translate(150px, 80px); }
     100% { transform: translate(0, 0); }
-}
-
-/* FADES */
-@-moz-keyframes fade1 {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-}
-@-webkit-keyframes fade1 {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-}
-@keyframes fade1 {
-    0% { opacity: 0; }
-    100% { opacity: 1; }
-}
-
-@-moz-keyframes fade2 {
-    0% { opacity: 0; }
-    20% { opacity: 0; }
-    100% { opacity: 1; }
-}
-@-webkit-keyframes fade2 {
-    0% { opacity: 0; }
-    20% { opacity: 0; }
-    100% { opacity: 1; }
-}
-@keyframes fade2 {
-    0% { opacity: 0; }
-    20% { opacity: 0; }
-    100% { opacity: 1; }
-}
-
-@-moz-keyframes fade3 {
-    0% { opacity: 0; }
-    30% { opacity: 0.5; }
-    60% { opacity: 0; }
-    100% { opacity: 1; }
-}
-@-webkit-keyframes fade3 {
-    0% { opacity: 0; }
-    30% { opacity: 0.5; }
-    60% { opacity: 0; }
-    100% { opacity: 1; }
-}
-@keyframes fade3 {
-    0% { opacity: 0; }
-    30% { opacity: 0.5; }
-    60% { opacity: 0; }
-    100% { opacity: 1; }
 }
 
 /* ROTATE */
@@ -356,4 +311,35 @@ ul.btn-west {
     0% { transform: scale(0.2); }
     75% { transform: scale(1.2); }
     100% { transform: scale(1); }
+}
+
+/* COLORS */
+@-moz-keyframes color1 {
+    0% { background-color: #228686; }
+}
+@-webkit-keyframes color1 {
+    0% { background-color: #228686; }
+}
+@keyframes color1 {
+    0% { background-color: #228686; }
+}
+
+@-moz-keyframes color2 {
+    0% { background-color: #863022; }
+}
+@-webkit-keyframes color2 {
+    0% { background-color: #863022; }
+}
+@keyframes color2 {
+    0% { background-color: #863022; }
+}
+
+@-moz-keyframes color3 {
+    0% { background-color: #386837; }
+}
+@-webkit-keyframes color3 {
+    0% { background-color: #386837; }
+}
+@keyframes color3 {
+    0% { background-color: #386837; }
 }
