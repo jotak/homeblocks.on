@@ -2,7 +2,8 @@ import io.vertx.ceylon.core {
     vertx_=vertx
 }
 import io.vertx.ceylon.core.http {
-    HttpServerOptions
+    HttpServerOptions,
+    HttpServerRequest
 }
 import io.vertx.ceylon.core.net {
     PemKeyCertOptions
@@ -36,10 +37,27 @@ shared void startServer() {
         .listen(appPort, (Anything|Throwable res) {
             switch (res)
             case (is Throwable) {
-                print("Server failed to start!");
+                print("HTTPS server failed to start!");
                 res.printStackTrace();
             } else {
-                print("Server started, listening on ``appPort``");
+                print("HTTPS server started, listening on ``appPort``");
             }
+    });
+
+    // Keep listening on 80, and redirect
+    value server80 = vertx.createHttpServer();
+    server80.requestHandler((HttpServerRequest req) {
+        req.response()
+            .setStatusCode(301)
+            .putHeader("Location", req.absoluteURI().replace("http", "https"))
+            .end();
+    }).listen(80, (Anything|Throwable res) {
+        switch (res)
+        case (is Throwable) {
+            print("HTTP server failed to start!");
+            res.printStackTrace();
+        } else {
+            print("HTTP server started, redirecting to HTTPS");
+        }
     });
 }
